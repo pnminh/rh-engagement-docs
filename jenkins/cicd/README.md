@@ -1,3 +1,8 @@
+# CICD pipelines with Jenkins and webhooks
+## Overview of the CI/CD process
+![cicd overview](./cicd_overview.png)
+## Pipeline Details
+![Pipeline Details](./cicd_details.png)
 # Set up github webhooks for Jenkins main and PR build pipelines
 
 ## Webhook for main pipeline
