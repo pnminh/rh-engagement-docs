@@ -1,0 +1,10 @@
+// add jobs from the folder jobs
+node {
+
+    checkout scm
+    jobDsl targets: 'jobs/**/*.groovy',
+           removedJobAction: 'DELETE',
+           removedViewAction: 'DELETE',
+           lookupStrategy: 'SEED_JOB',
+           additionalParameters: [message: 'Hello from pipeline', credentials: 'SECRET']
+}

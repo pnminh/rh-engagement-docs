@@ -1,0 +1,116 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<flow-definition plugin="workflow-job@2.34">
+    <actions>
+        <org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobAction plugin="pipeline-model-definition@1.3.9"/>
+        <org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobPropertyTrackerAction plugin="pipeline-model-definition@1.3.9">
+            <jobProperties/>
+            <triggers/>
+            <parameters/>
+            <options/>
+        </org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobPropertyTrackerAction>
+    </actions>
+    <description></description>
+    <keepDependencies>false</keepDependencies>
+    <properties>
+        <org.jenkinsci.plugins.workflow.job.properties.PipelineTriggersJobProperty>
+            <triggers>
+                <org.jenkinsci.plugins.ghprb.GhprbTrigger plugin="ghprb@1.42.1">
+                    <spec>H/5 * * * *</spec>
+                    <configVersion>3</configVersion>
+                    <adminlist></adminlist>
+                    <allowMembersOfWhitelistedOrgsAsAdmin>false</allowMembersOfWhitelistedOrgsAsAdmin>
+                    <orgslist>RedHat</orgslist>
+                    <cron>H/5 * * * *</cron>
+                    <buildDescTemplate></buildDescTemplate>
+                    <onlyTriggerPhrase>false</onlyTriggerPhrase>
+                    <useGitHubHooks>true</useGitHubHooks>
+                    <permitAll>false</permitAll>
+                    <whitelist></whitelist>
+                    <autoCloseFailedPullRequests>false</autoCloseFailedPullRequests>
+                    <displayBuildErrorsOnDownstreamBuilds>false</displayBuildErrorsOnDownstreamBuilds>
+                    <whiteListTargetBranches>
+                        <org.jenkinsci.plugins.ghprb.GhprbBranch>
+                            <branch></branch>
+                        </org.jenkinsci.plugins.ghprb.GhprbBranch>
+                    </whiteListTargetBranches>
+                    <blackListTargetBranches>
+                        <org.jenkinsci.plugins.ghprb.GhprbBranch>
+                            <branch></branch>
+                        </org.jenkinsci.plugins.ghprb.GhprbBranch>
+                    </blackListTargetBranches>
+                    <gitHubAuthId>Id_Of_The_Account_Which_Have_Write_Access</gitHubAuthId>
+                    <triggerPhrase></triggerPhrase>
+                    <skipBuildPhrase>.*\[skip\W+ci\].*</skipBuildPhrase>
+                    <blackListCommitAuthor></blackListCommitAuthor>
+                    <blackListLabels></blackListLabels>
+                    <whiteListLabels></whiteListLabels>
+                    <includedRegions></includedRegions>
+                    <excludedRegions></excludedRegions>
+                    <extensions>
+                        <org.jenkinsci.plugins.ghprb.extensions.status.GhprbSimpleStatus>
+                            <commitStatusContext></commitStatusContext>
+                            <triggeredStatus></triggeredStatus>
+                            <startedStatus></startedStatus>
+                            <statusUrl></statusUrl>
+                            <addTestResults>false</addTestResults>
+                        </org.jenkinsci.plugins.ghprb.extensions.status.GhprbSimpleStatus>
+                    </extensions>
+                </org.jenkinsci.plugins.ghprb.GhprbTrigger>
+            </triggers>
+        </org.jenkinsci.plugins.workflow.job.properties.PipelineTriggersJobProperty>
+        <hudson.plugins.jira.JiraProjectProperty plugin="jira@3.0.9"/>
+        <io.fabric8.jenkins.openshiftsync.BuildConfigProjectProperty plugin="openshift-sync@1.0.41">
+            <uid></uid>
+            <namespace></namespace>
+            <name></name>
+            <resourceVersion></resourceVersion>
+        </io.fabric8.jenkins.openshiftsync.BuildConfigProjectProperty>
+        <com.sonyericsson.jenkins.plugins.bfa.model.ScannerJobProperty plugin="build-failure-analyzer@1.22.0">
+            <doNotScan>false</doNotScan>
+        </com.sonyericsson.jenkins.plugins.bfa.model.ScannerJobProperty>
+        <com.coravy.hudson.plugins.github.GithubProjectProperty plugin="github@1.29.5">
+            <projectUrl>https://github.com/test-job2/</projectUrl>
+            <displayName></displayName>
+        </com.coravy.hudson.plugins.github.GithubProjectProperty>
+        <com.dabsquared.gitlabjenkins.connection.GitLabConnectionProperty plugin="gitlab-plugin@1.5.12">
+            <gitLabConnection></gitLabConnection>
+        </com.dabsquared.gitlabjenkins.connection.GitLabConnectionProperty>
+        <org.jenkinsci.plugins.gitlablogo.GitlabLogoProperty plugin="gitlab-logo@1.0.3">
+            <repositoryName></repositoryName>
+        </org.jenkinsci.plugins.gitlablogo.GitlabLogoProperty>
+        <org.jenkinsci.plugins.gogs.GogsProjectProperty plugin="gogs-webhook@1.0.15">
+            <gogsSecret>{Gogs secret}</gogsSecret>
+            <gogsUsePayload>false</gogsUsePayload>
+            <gogsBranchFilter></gogsBranchFilter>
+        </org.jenkinsci.plugins.gogs.GogsProjectProperty>
+        <com.sonyericsson.rebuild.RebuildSettings plugin="rebuild@1.31">
+            <autoRebuild>false</autoRebuild>
+            <rebuildDisabled>false</rebuildDisabled>
+        </com.sonyericsson.rebuild.RebuildSettings>
+    </properties>
+    <definition class="org.jenkinsci.plugins.workflow.cps.CpsScmFlowDefinition" plugin="workflow-cps@2.73">
+        <scm class="hudson.plugins.git.GitSCM" plugin="git@3.12.0">
+            <configVersion>2</configVersion>
+            <userRemoteConfigs>
+                <hudson.plugins.git.UserRemoteConfig>
+                    <name>origin</name>
+                    <refspec>+refs/pull/${ghprbPullId}/*:refs/remotes/origin/pr/${ghprbPullId}/*</refspec>
+                    <url>https://github.com/test-job2</url>
+                    <credentialsId>user-pass-id</credentialsId>
+                </hudson.plugins.git.UserRemoteConfig>
+            </userRemoteConfigs>
+            <branches>
+                <hudson.plugins.git.BranchSpec>
+                    <name>${sha1}</name>
+                </hudson.plugins.git.BranchSpec>
+            </branches>
+            <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
+            <submoduleCfg class="list"/>
+            <extensions/>
+        </scm>
+        <scriptPath>Jenkinsfile</scriptPath>
+        <lightweight>false</lightweight>
+    </definition>
+    <triggers/>
+    <disabled>false</disabled>
+</flow-definition>
