@@ -102,3 +102,8 @@ To add the cert to the trusted store, first download the cert from the broker se
 ```
 $ keytool --import -trustcacerts -alias kafka_cluster -file acls/kafka_cluster.crt
 ```
+
+## List topics
+```
+./bin/kafka-topics.sh --list --zookeeper z-2.aws-msk-cluster.c4.kafka.us-west-2.amazonaws.com:2181
+```
