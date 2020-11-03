@@ -78,7 +78,7 @@ Caused by: org.apache.kafka.common.errors.TimeoutException: Timed out waiting fo
 The custom configs can be set with the file:   
 `client-ssl.properties`
 ```
-bootstrap.servers=SSL://b-3.ot1v3-msk-dev-f5z3n.exm8yb.c4.kafka.us-west-2.amazonaws.com:9094
+bootstrap.servers=SSL://b-3.aws-msk-cluster-f5z3n.exm8yb.c4.kafka.us-west-2.amazonaws.com:9094
 security.protocol=SSL
 ssl.truststore.location=truststore.jks
 ssl.truststore.password=changeMe
@@ -100,10 +100,48 @@ Caused by: javax.net.ssl.SSLHandshakeException: PKIX path building failed: sun.s
 ```
 To add the cert to the trusted store, first download the cert from the broker server. One option is to go to the browser (Firefox works the best in this scenario) and open https://broker_url:port, e.g https://b-1.aws-msk-cluster.c4.kafka.us-west-2.amazonaws.com:9094. Then add the cert to the trust store:
 ```
-$ keytool --import -trustcacerts -alias kafka_cluster -file acls/kafka_cluster.crt
+$ keytool --import -trustcacerts -alias kafka_cluster -file acls/kafka_cluster.crt -keystore truststore.jks
 ```
 
 ## List topics
 ```
 ./bin/kafka-topics.sh --list --zookeeper z-2.aws-msk-cluster.c4.kafka.us-west-2.amazonaws.com:2181
+```
+
+## create topic
+```
+./bin/kafka-topics.sh --create --topic test-mp --zookeeper z-2.aws-msk-cluster.c4.kafka.us-west-2.amazonaws.com:2181 --partitions 1 --replication-factor 1
+```
+
+## create ACLs for producers and consumers to access brokers
+```
+# required for the SERVICE_NAME to access brokers
+./bin/kafka-acls.sh --authorizer-properties zookeeper.connect=z-1.aws-msk-cluster-f5z3n.exm8yb.c4.kafka.us-west-2.amazonaws.com:2181 --add --allow-principal "User:CN=[SERVICE_NAME]" --operation all --topic=*
+```
+```
+# required for the consumer to see each other and other consumer groups
+./bin/kafka-acls.sh --authorizer-properties zookeeper.connect=z-1.aws-msk-cluster-f5z3n.exm8yb.c4.kafka.us-west-2.amazonaws.com:2181 --add --allow-principal "User:CN=[SERVICE_NAME]" --operation all --group=*
+```
+# write to and read from broker    
+Note** the properties file is the same for `command-config`, `producer.config`, and `consumer.config`, check the content from the file `./client-ssl.properties`
+```
+./bin/kafka-console-producer.sh --topic test-mp --broker-list b-3.aws-msk-cluster-f5z3n.exm8yb.c4.kafka.us-west-2.amazonaws.com:9094,b-2.aws-msk-cluster-f5z3n.exm8yb.c4.kafka.us-west-2.amazonaws.com:9094,b-1.aws-msk-cluster-f5z3n.exm8yb.c4.kafka.us-west-2.amazonaws.com:9094 --producer.config acls/client-ssl.properties
+```
+
+```
+./bin/kafka-console-consumer.sh --topic test-mp --from-beginning --bootstrap-server b-3.aws-msk-cluster-f5z3n.exm8yb.c4.kafka.us-west-2.amazonaws.com:9094 --consumer.config acls/hos30-entity-processing/client-ssl.properties
+
+```
+
+
+```
+./bin/kafka-console-consumer.sh --topic test-mp --from-beginning --bootstrap-server b-3.aws-msk-cluster-f5z3n.exm8yb.c4.kafka.us-west-2.amazonaws.com:9094 --consumer.config acls/client-ssl.properties
+```
+
+```
+./bin/kafka-console-producer.sh --topic test-mp --broker-list b-1.aws-msk-cluster.9emwxx.c4.kafka.us-west-2.amazonaws.com:9094,b-2.aws-msk-cluster.9emwxx.c4.kafka.us-west-2.amazonaws.com:9094,b-3.aws-msk-cluster.9emwxx.c4.kafka.us-west-2.amazonaws.com:9094 --producer-property security.protocol=SSL
+```
+
+```
+./bin/kafka-console-consumer.sh --topic test-mp --from-beginning --bootstrap-server b-1.aws-msk-cluster.9emwxx.c4.kafka.us-west-2.amazonaws.com:9094 --consumer-property security.protocol=SSL
 ```
