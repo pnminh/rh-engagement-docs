@@ -129,14 +129,10 @@ Note** the properties file is the same for `command-config`, `producer.config`, 
 ```
 
 ```
-./bin/kafka-console-consumer.sh --topic test-mp --from-beginning --bootstrap-server b-3.aws-msk-cluster-f5z3n.exm8yb.c4.kafka.us-west-2.amazonaws.com:9094 --consumer.config acls/hos30-entity-processing/client-ssl.properties
-
-```
-
-
-```
 ./bin/kafka-console-consumer.sh --topic test-mp --from-beginning --bootstrap-server b-3.aws-msk-cluster-f5z3n.exm8yb.c4.kafka.us-west-2.amazonaws.com:9094 --consumer.config acls/client-ssl.properties
+
 ```
+We can also add inline properties using `--producer-property` or `--consumer-property` like so:
 
 ```
 ./bin/kafka-console-producer.sh --topic test-mp --broker-list b-1.aws-msk-cluster.9emwxx.c4.kafka.us-west-2.amazonaws.com:9094,b-2.aws-msk-cluster.9emwxx.c4.kafka.us-west-2.amazonaws.com:9094,b-3.aws-msk-cluster.9emwxx.c4.kafka.us-west-2.amazonaws.com:9094 --producer-property security.protocol=SSL
