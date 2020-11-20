@@ -74,7 +74,11 @@ Given the active profile is `dev`, spring will look into these vault paths (in o
 /some_other_path/app-name/dev
 /some_other_path/app-name
 ```
-
+## Debugging
+To add more debug logs, enable log level with spring configs in environment variable or application.yml:
+```
+logging.level.org.springframework.web=DEBUG
+```
 ## References:
 - https://github.com/spring-cloud/spring-cloud-vault/issues/279
 - https://cloud.spring.io/spring-cloud-vault/multi/multi_vault.config.backends.html#vault.config.backends.kv.versioned
