@@ -69,7 +69,7 @@ spring:
       read-timeout: 15000
       enabled: true
 ```
-Given the active profile is `dev`, spring will look into these vault paths (in order) in `namespace-name` namespace to retrieve:
+Given the active profile is `dev`, spring will look into these vault paths (in order) in `namespace-name` namespace to retrieve secrets (list of key-value pairs):
 ```
 /some_other_path/app-name/dev
 /some_other_path/app-name
