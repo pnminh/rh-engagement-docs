@@ -31,14 +31,14 @@ The files in the repository are separated into 2 categories
       ``` 
    - Other supporting files that are not used by the build process on Jenkins, e.g. local server configs, ide files, etc.   
    Supporting files which should be ignored by the build process need to be added to the file `.appbuildignore`:
-   ```
-    # a simple ignore file that uses exact matching. More complex formats (regex, glob, etc.) can be used later
-    # require exact match for directories/files, also directories must be followed by /
-    infra/
-    README.md
-    Jenkinsfile
-    .appbuildignore
-   ```
+      ```
+      # a simple ignore file that uses exact matching. More complex formats (regex, glob, etc.) can be used later
+      # require exact match for directories/files, also directories must be followed by /
+      infra/
+      README.md
+      Jenkinsfile
+      .appbuildignore
+      ```
 ### Pipeline details
    The pipeline include 2 main stages: Build stage and deployment stage. 
    - The build stage is run when there is application code change. The final product of this stage is the app image that can be deployed to Openshift. If there is no application code change, or if the pipeline is run for the environment that is higher than dev, this stage is skip
