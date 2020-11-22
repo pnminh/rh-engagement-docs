@@ -3,6 +3,56 @@
 ![cicd overview](./cicd_overview.png)
 ## Pipeline Details
 ![Pipeline Details](./cicd_details.png)
+### Repository structure
+The files in the repository are separated into 2 categories
+1. Application source code: Files that are used by the build process to create the application image
+2. Supporting files: Including   
+   - App configurations: configurations that are specific to environment where the app is deployed(dev, test, prod, etc.). The app configuration files are mapped to Openshift configMaps and provided to the app deployment as volumes at runtime.
+        ```
+        infra/configs/app/
+        ├── appConfig.cert.json
+        ├── appConfig.dev.json
+        ├── appConfig.local.json
+        └── appConfig.test.json
+
+        0 directories, 4 files
+        ```
+   - Infrastructure code: Jinja2 templates to build Openshift resources
+         ```
+        infra/templates/
+        ├── nginx
+        │   └── nginx.conf.j2
+        └── openshift
+            └── reactjs-portal-resources.yaml.j2
+
+        2 directories, 2 files
+        ``` 
+   - Other supporting files that are not used by the build process on Jenkins, e.g. local server configs, ide files, etc.   
+   Supporting files which should be ignored by the build process need to be added to the file `.appbuildignore`:
+   ```
+    # a simple ignore file that uses exact matching. More complex formats (regex, glob, etc.) can be used later
+    # require exact match for directories/files, also directories must be followed by /
+    infra/
+    README.md
+    Jenkinsfile
+    .appbuildignore
+   ```
+### Pipeline details
+   The pipeline include 2 main stages: Build stage and deployment stage. 
+   - The build stage is run when there is application code change. The final product of this stage is the app image that can be deployed to Openshift. If there is no application code change, or if the pipeline is run for the environment that is higher than dev, this stage is skip
+   - The deployment stage creates a new rollout of the latest image (if the build stage was run) and any configuration changes (Openshift resources, application configs, etc.). Based on the environment, the deployment stage can include the promotion of the image from the lower environment.
+### Ansible agent
+  The ansible agent is used as part of the pipeline and takes advantage of Jinja2 templates to build Openshift resource files (yaml format). The same template can be used across environments with env specific data are added to it when the pipeline runs.   
+  The ansible agent can also talk to Vault server and retrieve secrets that will be provided to Jinja2 templates. The `hashi_vault` lookup plugin is used for this purpose :
+  
+  `all.yml`
+  ```
+  ...
+  hos_route_configs: "{{ lookup('hashi_vault', 'secret=vistracks/data/hos.{{OPENSHIFT_ENV}}.omnitracsone.com_routes:data auth_method=approle role_id={{role_id}} secret_id={{secret_id}} url={{ vault_url }} namespace=VisTracks validate_certs=no')}}"
+  ...
+
+  ```
+  The current setup for Vault authentication uses the `approle` method and the `role_id` and `secret_id` retrieved from Jenkins credentials store (using [openshift-jenkins-sync-plugin](https://github.com/openshift/jenkins-sync-plugin#openshift-jenkins-sync-plugin) to convert Openshift secrets into Jenkins credentials).  
 # Set up github webhooks for Jenkins main and PR build pipelines
 
 ## Webhook for main pipeline
