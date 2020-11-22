@@ -8,7 +8,8 @@ The files in the repository are separated into 2 categories
 1. Application source code: Files that are used by the build process to create the application image
 2. Supporting files: Including   
    - App configurations: configurations that are specific to environment where the app is deployed(dev, test, prod, etc.). The app configuration files are mapped to Openshift configMaps and provided to the app deployment as volumes at runtime.
-        ```
+  
+      ```
         infra/configs/app/
         ├── appConfig.cert.json
         ├── appConfig.dev.json
@@ -16,9 +17,10 @@ The files in the repository are separated into 2 categories
         └── appConfig.test.json
 
         0 directories, 4 files
-        ```
-   - Infrastructure code: Jinja2 templates to build Openshift resources
-         ```
+      ```
+   - Infrastructure code: Jinja2 templates to build Openshift resources   
+         
+      ```
         infra/templates/
         ├── nginx
         │   └── nginx.conf.j2
@@ -26,7 +28,7 @@ The files in the repository are separated into 2 categories
             └── reactjs-portal-resources.yaml.j2
 
         2 directories, 2 files
-        ``` 
+      ``` 
    - Other supporting files that are not used by the build process on Jenkins, e.g. local server configs, ide files, etc.   
    Supporting files which should be ignored by the build process need to be added to the file `.appbuildignore`:
    ```
