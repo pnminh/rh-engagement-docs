@@ -112,6 +112,49 @@ Note: Credentials need to have write access to the repository to send build stat
 
    - Also if the Jenkins server uses a self-signed certificate, make sure we check Disable for SSL verification.
    - After adding the webhook URL, GitHub will send a test request to the server. Make sure the hook is shown with a green tick
-
+## Custom Jenkins agent images
+Create a configmap with label `role=jenkins-slave` that customize Jenkins slave template for Kubernetes,e.g. memory,cpu, env variables, etc. 
+Refer to [kubernetes plugin doc](https://javadoc.jenkins.io/plugin/kubernetes/org/csanchez/jenkins/plugins/kubernetes/) to see what properties can be added to the configmap.   
+For example, to add environment variable from a `secret`, refer to [SecretEnvVar class](https://javadoc.jenkins.io/plugin/kubernetes/org/csanchez/jenkins/plugins/kubernetes/model/SecretEnvVar.html) to get its properties. Then configure the configmap with the `envVars` portion with those keys:
+```
+<org.csanchez.jenkins.plugins.kubernetes.PodTemplate>
+  <inheritFrom></inheritFrom>
+  <name>jenkins-slave-mvn</name>
+  <instanceCap>2147483647</instanceCap>
+  <idleMinutes>0</idleMinutes>
+  <label>jenkins-slave-mvn</label>
+  <serviceAccount>jenkins</serviceAccount>
+  <nodeSelector></nodeSelector>
+  <nodeUsageMode>EXCLUSIVE</nodeUsageMode>
+  <volumes/>
+  <containers>
+    <org.csanchez.jenkins.plugins.kubernetes.ContainerTemplate>
+      <name>jnlp</name>
+      <image>image-registry.openshift-image-registry.svc:5000/ci-cd-namespace/jenkins-slave-mvn</image>
+      <privileged>false</privileged>
+      <alwaysPullImage>true</alwaysPullImage>
+      <workingDir>/tmp</workingDir>
+      <command></command>
+      <args>\${computer.jnlpmac} \${computer.name}</args>
+      <ttyEnabled>false</ttyEnabled>
+      <resourceRequestCpu>1</resourceRequestCpu>
+      <resourceRequestMemory>1.5Gi</resourceRequestMemory>
+      <resourceLimitCpu>1</resourceLimitCpu>
+      <resourceLimitMemory>1.5Gi</resourceLimitMemory>
+      <envVars>
+            <org.csanchez.jenkins.plugins.kubernetes.model.SecretEnvVar>
+              <key>DB_PASSWORD</key>
+              <secretName>postgresql-creds</secretName>
+              <secretKey>postgresql-password</secretKey>
+            </org.csanchez.jenkins.plugins.kubernetes.model.SecretEnvVar>
+      </envVars>
+    </org.csanchez.jenkins.plugins.kubernetes.ContainerTemplate>
+  </containers>
+  <envVars/>
+  <annotations/>
+  <imagePullSecrets/>
+  <nodeProperties/>
+</org.csanchez.jenkins.plugins.kubernetes.PodTemplate>
+```
 # References
 - [GitHub Pull Request Builder Plugin](https://github.com/jenkinsci/ghprb-plugin)
