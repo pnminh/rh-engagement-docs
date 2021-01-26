@@ -17,3 +17,5 @@ keytool --import -trustcacerts -alias kafka_cluster -file kafka_cluster.crt -key
 
 ./bin/kafka-console-consumer.sh --topic test-mp --from-beginning --bootstrap-server b-3.aws-msk-cluster-f5z3n.exm8yb.c4.kafka.us-west-2.amazonaws.com:9094 --consumer.config acls/hos30-entity-processing/client-ssl.properties
 
+# list acls
+kafka-acls.sh --list --authorizer-properties zookeeper.connect=zookeeper_host:2181
